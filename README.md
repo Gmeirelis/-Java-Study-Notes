@@ -1,4 +1,14 @@
-# -Java-Study-Notes
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" width="70">
+
+# Java Study Notes
+
+**Anotações • Exercícios • Código • Evolução**
+
+Minha jornada de estudos em Java com foco em desenvolvimento Backend.
+
+</div>
 
 Repository created to document my journey learning Java
 and backend development.
