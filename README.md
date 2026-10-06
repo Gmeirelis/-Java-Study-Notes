@@ -4,14 +4,15 @@
 
 # Java Study Notes
 
-**Anotações • Exercícios • Código • Evolução**
+**Notes • Exercises • Code • Growth**
 
-Minha jornada de estudos em Java com foco em desenvolvimento Backend.
-
-</div>
+My Java learning journey focused on Backend Development.
 
 Repository created to document my journey learning Java
 and backend development.
+</div>
+
+
 
 ## Topics
 
