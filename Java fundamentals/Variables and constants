@@ -1,1 +1,142 @@
 
+# Java Fundamentals — Variables and Constants
+
+## 1. Variables
+
+Uma variável é um espaço identificado na memória utilizado para armazenar um valor durante a execução de um programa.
+
+Em Java, toda variável possui um tipo, um nome e um valor.
+
+### Syntax
+
+```java
+type variableName = value;
+```
+
+- `type`: tipo de dado armazenado.
+- `variableName`: nome da variável.
+- `value`: valor atribuído à variável.
+
+### Example
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        int age = 23;
+        String name = "Guilherme";
+        double salary = 2000.00;
+        boolean isEmployed = true;
+
+        System.out.println(name);
+        System.out.println(age);
+        System.out.println(salary);
+        System.out.println(isEmployed);
+    }
+}
+```
+
+### Variable declaration and initialization
+
+Em Java, podemos declarar uma variável e atribuir um valor em momentos diferentes.
+
+**Declaration:**
+
+```java
+int age;
+```
+
+Nesse momento, a variável foi declarada, mas ainda não recebeu um valor.
+
+**Initialization:**
+
+```java
+age = 23;
+```
+
+Agora, a variável recebeu seu primeiro valor.
+
+**Declaration and initialization:**
+
+```java
+int age = 23;
+```
+
+Essa forma realiza as duas operações na mesma instrução.
+
+> **Important:** Variáveis locais precisam ser inicializadas antes de serem utilizadas. Variáveis de instância e de classe recebem valores padrão quando não são inicializadas explicitamente.
+
+---
+
+## 2. Reassigning Variables
+
+Uma variável pode receber novos valores durante a execução do programa, desde que respeite seu tipo.
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        int age = 23;
+
+        System.out.println(age);
+
+        age = 24;
+
+        System.out.println(age);
+    }
+}
+```
+
+**Output:**
+
+```text
+23
+24
+```
+
+O valor da variável `age` foi alterado de `23` para `24`.
+
+### Type safety
+
+Java é uma linguagem estaticamente tipada. Depois de declarada, uma variável possui um tipo definido.
+
+```java
+int age = 23;
+
+age = 24;     // Valid
+// age = "24"; // Invalid
+```
+
+O compilador impede a atribuição de uma `String` a uma variável do tipo `int`.
+
+---
+
+## 3. Constants with `final`
+
+Em Java, a palavra-chave `final` impede que uma variável receba uma nova atribuição depois de inicializada.
+
+Uma variável `final` precisa ser inicializada antes de ser utilizada e não pode receber outra atribuição após sua inicialização.
+
+### Syntax
+
+```java
+final type CONSTANT_NAME = value;
+```
+
+### Example
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        final double TAX_RATE = 0.10;
+
+        System.out.println(TAX_RATE);
+
+        // TAX_RATE = 0.15; // Compilation error
+    }
+}
+```
+
+O código não compila se a linha comentada for descomentada, pois `TAX_RATE` já recebeu um valor.
+
+### Naming convention
+
+Por convenção, constantes com valores fixos conhecidos são declaradas com nomes
