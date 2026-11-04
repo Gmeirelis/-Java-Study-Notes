@@ -1,167 +1,311 @@
-# Java Fundamentals — Primitive Data Types
+# Java Operators
 
-## 1. What Are Primitive Data Types?
+Os operadores em Java são símbolos utilizados para realizar operações sobre variáveis, valores e expressões.
 
-Os tipos primitivos são tipos de dados básicos da linguagem Java. Eles permitem armazenar valores simples, como números inteiros, números decimais, caracteres e valores lógicos.
+Eles permitem executar cálculos matemáticos, comparar valores, combinar condições e atribuir valores às variáveis.
 
-Java possui **8 tipos primitivos**:
+## 1. Arithmetic Operators (Operadores Aritméticos)
 
-| Type | Size | Description | Example |
-|---|---:|---|---|
-| `byte` | 8 bits | Inteiros pequenos | `byte age = 23;` |
-| `short` | 16 bits | Inteiros curtos | `short year = 2026;` |
-| `int` | 32 bits | Inteiros comuns | `int quantity = 100;` |
-| `long` | 64 bits | Inteiros grandes | `long population = 8000000000L;` |
-| `float` | 32 bits | Números de ponto flutuante | `float price = 19.99F;` |
-| `double` | 64 bits | Números de ponto flutuante com maior precisão | `double salary = 2000.50;` |
-| `char` | 16 bits | Um valor de caractere UTF-16 | `char grade = 'A';` |
-| `boolean` | JVM-dependent | Valor lógico verdadeiro ou falso | `boolean isActive = true;` |
+Utilizados para realizar operações matemáticas.
 
-**Important:**
-- `byte`, `short`, `int` e `long` são tipos inteiros com sinal.
-- `float` e `double` representam números de ponto flutuante.
-- `char` representa uma unidade de código UTF-16, não necessariamente um caractere Unicode completo.
-- `boolean` aceita `true` ou `false`. A especificação da linguagem não define um tamanho de armazenamento fixo para esse tipo.
-
----
-
-## 2. Integer Types
-
-Os tipos inteiros armazenam números sem casas decimais.
-
-### `byte`
-
-O tipo `byte` ocupa 8 bits e possui valores entre -128 e 127.
-
-```java
-byte age = 23;
-byte temperature = -10;
-byte quantity = 100;
-```
-
-É útil quando precisamos representar valores inteiros pequenos e queremos utilizar um tipo com faixa limitada.
-
-### `short`
-
-O tipo `short` ocupa 16 bits e possui valores entre -32.768 e 32.767.
-
-```java
-short year = 2026;
-short temperature = -150;
-```
-
-### `int`
-
-O tipo `int` ocupa 32 bits e é a escolha padrão para números inteiros na maioria das aplicações.
-
-Seu intervalo vai de -2.147.483.648 até 2.147.483.647.
-
-```java
-int age = 23;
-int productQuantity = 1500;
-int population = 1000000;
-```
-
-### `long`
-
-O tipo `long` ocupa 64 bits e permite representar números inteiros muito grandes.
-
-```java
-long population = 8000000000L;
-long transactionId = 9876543210L;
-```
-
-O sufixo `L` indica que o literal é do tipo `long`. É preferível utilizar `L` maiúsculo para evitar confusão com o número `1`.
-
-### Integer Range
-
-| Type | Minimum | Maximum |
-|---|---:|---:|
-| `byte` | -128 | 127 |
-| `short` | -32.768 | 32.767 |
-| `int` | -2.147.483.648 | 2.147.483.647 |
-| `long` | -9.223.372.036.854.775.808 | 9.223.372.036.854.775.807 |
-
----
-
-## 3. Floating-Point Types
-
-Os tipos de ponto flutuante representam números com casas decimais.
-
-### `float`
-
-O tipo `float` utiliza 32 bits e oferece aproximadamente 6 a 7 dígitos decimais de precisão.
-
-```java
-float productPrice = 19.99F;
-float discountRate = 0.15F;
-```
-
-O sufixo `F` indica que o literal é do tipo `float`.
-
-### `double`
-
-O tipo `double` utiliza 64 bits e oferece aproximadamente 15 a 16 dígitos decimais de precisão.
-
-```java
-double monthlySalary = 2000.50;
-double productPrice = 149.99;
-double average = 8.75;
-```
-
-O tipo `double` é o padrão para literais decimais em Java.
-
-### `float` vs. `double`
-
-| Feature | `float` | `double` |
+| Operador | Descrição | Exemplo |
 |---|---|---|
-| Size | 32 bits | 64 bits |
-| Precision | Approximately 6–7 decimal digits | Approximately 15–16 decimal digits |
-| Literal suffix | `F` or `f` | `D` or `d` (optional) |
-| Default decimal literal | No | Yes |
+| `+` | Adição | `10 + 5` |
+| `-` | Subtração | `10 - 5` |
+| `*` | Multiplicação | `10 * 5` |
+| `/` | Divisão | `10 / 5` |
+| `%` | Módulo (resto da divisão) | `10 % 3` |
 
-**Important:** `float` e `double` utilizam representação binária de ponto flutuante. Por isso, alguns valores decimais não podem ser representados exatamente.
+### Example
 
 ```java
-double result = 0.1 + 0.2;
+int numberOne = 10;
+int numberTwo = 3;
+
+System.out.println(numberOne + numberTwo); // 13
+System.out.println(numberOne - numberTwo); // 7
+System.out.println(numberOne * numberTwo); // 30
+System.out.println(numberOne / numberTwo); // 3
+System.out.println(numberOne % numberTwo); // 1
+```
+
+**Important:** Quando dois números inteiros são divididos, o resultado também será inteiro. A parte decimal é descartada.
+
+Para obter um resultado decimal, utilize pelo menos um operando do tipo `double`.
+
+```java
+double result = 10.0 / 3;
+
+System.out.println(result); // 3.3333333333333335
+```
+
+## 2. Assignment Operators (Operadores de Atribuição)
+
+Utilizados para atribuir ou atualizar valores de variáveis.
+
+| Operador | Equivalência | Exemplo |
+|---|---|---|
+| `=` | Atribuição | `x = 10` |
+| `+=` | `x = x + 5` | `x += 5` |
+| `-=` | `x = x - 5` | `x -= 5` |
+| `*=` | `x = x * 5` | `x *= 5` |
+| `/=` | `x = x / 5` | `x /= 5` |
+| `%=` | `x = x % 5` | `x %= 5` |
+
+### Example
+
+```java
+int number = 10;
+
+number += 5; // 15
+number -= 3; // 12
+number *= 2; // 24
+number /= 4; // 6
+number %= 4; // 2
+
+System.out.println(number);
+```
+
+## 3. Relational Operators (Operadores Relacionais)
+
+Utilizados para comparar dois valores.
+
+O resultado de uma comparação sempre será um valor booleano (`true` ou `false`).
+
+| Operador | Descrição |
+|---|---|
+| `==` | Igual a |
+| `!=` | Diferente de |
+| `>` | Maior que |
+| `<` | Menor que |
+| `>=` | Maior ou igual a |
+| `<=` | Menor ou igual a |
+
+### Example
+
+```java
+int age = 20;
+
+System.out.println(age == 20); // true
+System.out.println(age != 20); // false
+System.out.println(age > 18);  // true
+System.out.println(age < 18);  // false
+System.out.println(age >= 20); // true
+System.out.println(age <= 18); // false
+```
+
+**Important:** Não confunda `=` com `==`.
+
+- `=` atribui um valor a uma variável.
+- `==` compara dois valores.
+
+Para comparar o conteúdo de objetos `String`, utilize o método `.equals()` em vez de `==`.
+
+```java
+String nameOne = new String("Java");
+String nameTwo = new String("Java");
+
+System.out.println(nameOne == nameTwo);      // false
+System.out.println(nameOne.equals(nameTwo)); // true
+```
+
+## 4. Logical Operators (Operadores Lógicos)
+
+Utilizados para combinar ou inverter expressões booleanas.
+
+| Operador | Descrição | Resultado |
+|---|---|---|
+| `&&` | AND (E) | true se ambas forem verdadeiras |
+| `\|\|` | OR (OU) | true se pelo menos uma for verdadeira |
+| `!` | NOT (NÃO) | Inverte o resultado booleano |
+
+### AND (`&&`)
+
+Todas as condições precisam ser verdadeiras.
+
+```java
+int age = 25;
+boolean hasLicense = true;
+
+if (age >= 18 && hasLicense) {
+    System.out.println("Allowed to drive");
+}
+```
+
+### OR (`||`)
+
+Pelo menos uma condição precisa ser verdadeira.
+
+```java
+boolean isAdmin = false;
+boolean isManager = true;
+
+if (isAdmin || isManager) {
+    System.out.println("Access granted");
+}
+```
+
+### NOT (`!`)
+
+Inverte o valor booleano.
+
+```java
+boolean isActive = true;
+
+System.out.println(!isActive); // false
+```
+
+### Short-Circuit Evaluation
+
+Os operadores `&&` e `||` utilizam avaliação de curto-circuito.
+
+- `&&`: se a primeira condição for falsa, a segunda não será avaliada.
+- `||`: se a primeira condição for verdadeira, a segunda não será avaliada.
+
+```java
+int number = 10;
+
+if (number > 5 || number / 0 > 1) {
+    System.out.println("Condition satisfied");
+}
+```
+
+Nesse exemplo, a segunda expressão não é executada porque a primeira já é verdadeira.
+
+## 5. Increment and Decrement Operators
+
+Utilizados para aumentar ou diminuir o valor de uma variável em uma unidade.
+
+| Operador | Descrição |
+|---|---|
+| `++` | Incrementa em 1 |
+| `--` | Decrementa em 1 |
+
+Existem duas formas de utilização:
+
+**Prefix:** O valor é incrementado antes de ser utilizado na expressão.
+
+```java
+int number = 10;
+
+System.out.println(++number); // 11
+```
+
+**Postfix:** O valor atual é utilizado primeiro e depois incrementado.
+
+```java
+int number = 10;
+
+System.out.println(number++); // 10
+System.out.println(number);   // 11
+```
+
+O mesmo comportamento se aplica ao operador de decremento (`--`).
+
+## 6. Ternary Operator (Operador Ternário)
+
+O operador ternário é uma forma simplificada de escrever uma expressão condicional.
+
+Sua estrutura é:
+
+```java
+condition ? valueIfTrue : valueIfFalse;
+```
+
+### Example
+
+```java
+int age = 20;
+
+String result = age >= 18 ? "Adult" : "Minor";
 
 System.out.println(result);
 ```
 
-O resultado pode ser exibido como:
+Nesse exemplo:
 
-```text
-0.30000000000000004
-```
+- Se a condição for verdadeira, retorna `"Adult"`.
+- Se a condição for falsa, retorna `"Minor"`.
 
-Para cálculos financeiros que exigem precisão decimal, como valores monetários, prefira estudar a classe `BigDecimal` em vez de depender de `float` ou `double`.
+É útil para condições simples. Para lógicas mais complexas, prefira utilizar `if` e `else`.
 
----
+## 7. Bitwise Operators (Operadores Bit a Bit)
 
-## 4. Character Type — `char`
+Realizam operações diretamente sobre os bits de valores inteiros.
 
-O tipo `char` ocupa 16 bits e representa uma unidade de código UTF-16.
+| Operador | Descrição |
+|---|---|
+| `&` | AND bit a bit |
+| `\|` | OR bit a bit |
+| `^` | XOR bit a bit |
+| `~` | NOT bit a bit |
+| `<<` | Deslocamento à esquerda |
+| `>>` | Deslocamento à direita com sinal |
+| `>>>` | Deslocamento à direita sem sinal |
 
-Um literal `char` utiliza aspas simples.
+### Example
 
 ```java
-char grade = 'A';
-char initial = 'G';
-char symbol = '$';
+int numberOne = 5; // 0101
+int numberTwo = 3; // 0011
+
+System.out.println(numberOne & numberTwo); // 1
+System.out.println(numberOne | numberTwo); // 7
+System.out.println(numberOne ^ numberTwo); // 6
 ```
 
-Também podemos representar um caractere por meio de seu código Unicode.
+Esses operadores são utilizados em situações específicas, como manipulação de flags, máscaras de bits e operações de baixo nível.
+
+## 8. Operator Precedence (Precedência dos Operadores)
+
+Quando uma expressão possui vários operadores, Java segue uma ordem de precedência para determinar qual operação será executada primeiro.
+
+Ordem simplificada, da maior para a menor precedência:
+
+1. Parênteses `()`
+2. Incremento e decremento `++` `--`, operadores unários `!` `~`
+3. Multiplicação, divisão e módulo `*` `/` `%`
+4. Adição e subtração `+` `-`
+5. Operadores de deslocamento `<<` `>>` `>>>`
+6. Operadores relacionais `<` `>` `<=` `>=` `instanceof`
+7. Igualdade `==` `!=`
+8. AND bit a bit `&`
+9. XOR bit a bit `^`
+10. OR bit a bit `|`
+11. AND lógico `&&`
+12. OR lógico `||`
+13. Operador ternário `?:`
+14. Operadores de atribuição `=` `+=` `-=` `*=` `/=` etc.
+
+### Example
 
 ```java
-char letter = '\u0041';
+int result = 10 + 5 * 2;
 
-System.out.println(letter);
+System.out.println(result); // 20
 ```
 
-Output:
+A multiplicação acontece primeiro.
 
-```text
-A
+Para alterar a ordem de execução, utilize parênteses:
+
+```java
+int result = (10 + 5) * 2;
+
+System.out.println(result); // 30
 ```
 
-**Important
+## Summary
+
+Os operadores são fundamentais para construir expressões e implementar regras de negócio em Java.
+
+Os principais grupos são:
+
+- Arithmetic: operações matemáticas.
+- Assignment: atribuição e atualização de valores.
+- Relational: comparação de valores.
+- Logical: combinação de condições booleanas.
+- Increment and Decrement: alteração de valores em uma unidade.
+- Ternary: expressões condicionais simplificadas.
+- Bitwise: manipulação de bits.
+- Precedence: ordem de execução dos operadores.
