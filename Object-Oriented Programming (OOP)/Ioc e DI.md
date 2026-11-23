@@ -1,338 +1,345 @@
-# Inversão de Controle (IoC) e Injeção de Dependência (DI)
 
-## 1. O problema: acoplamento forte
+## 1. Inversão de Controle (IoC)
 
-Quando uma classe cria suas próprias dependências com `new`, ela fica presa a uma implementação concreta.
+**Inversão de Controle (Inversion of Control — IoC)** é um princípio de desenvolvimento que consiste em retirar de uma classe a responsabilidade de instanciar suas próprias dependências.
+
+Em vez de uma classe controlar a criação dos objetos de que precisa, essa responsabilidade é transferida para um componente externo.
+
+### Exemplo sem IoC
+
+Imagine um sistema de pedidos em que `OrderService` precisa de `PaymentService` para processar pagamentos.
 
 ```java
-public class PedidoService {
+public class OrderService {
 
-    // A classe decide QUAL implementação usar e COMO criá-la
-    private PedidoRepository repository = new PedidoRepositoryMySQL();
+    private PaymentService paymentService = new PaymentService();
 
-    public void salvar(Pedido pedido) {
-        repository.salvar(pedido);
+    public void processOrder() {
+        paymentService.processPayment();
     }
 }
 ```
 
-**Problemas:**
+Nesse exemplo, `OrderService` instancia diretamente `PaymentService` utilizando `new`.
 
-- Difícil trocar o MySQL por outro banco (ou por um mock nos testes).
-- `PedidoService` precisa conhecer detalhes de construção de `PedidoRepositoryMySQL`.
-- Testes unitários ficam praticamente impossíveis sem acessar o banco real.
+**Problema:**
+- Alto acoplamento entre as classes.
+- Dificuldade para substituir implementações.
+- Maior dificuldade para realizar testes.
+- A classe controla a criação de suas dependências.
 
----
+### Exemplo com IoC
 
-## 2. Inversão de Controle (IoC)
-
-**IoC é um princípio de design**: em vez de a sua classe controlar a criação e o ciclo de vida das suas dependências, esse controle é **transferido para outra entidade** (um framework, um container ou o código que monta a aplicação).
-
-> "Não nos chame, nós chamamos você." (Princípio de Hollywood)
-
-Exemplos de IoC (nem todos são DI):
-
-| Forma | Como funciona |
-|-------|---------------|
-| Injeção de dependência | Alguém de fora entrega a dependência pronta |
-| Eventos / callbacks | O framework chama o seu código quando algo acontece |
-| Template Method | A classe base controla o fluxo, a subclasse preenche os passos |
-| Service Locator | A classe pede a dependência a um registro central |
-
-**Resumo:** IoC é o **princípio** (o "o quê"). DI é uma **técnica** para aplicá-lo (o "como").
-
----
-
-## 3. Injeção de Dependência (DI)
-
-**DI é o padrão em que uma classe recebe suas dependências de fora**, em vez de criá-las.
-
-### 3.1 Passo 1: depender de abstrações (interface)
+Agora, vamos transferir a responsabilidade de criar a dependência para uma classe externa.
 
 ```java
-public interface PedidoRepository {
-    void salvar(Pedido pedido);
-}
+public class OrderService {
 
-public class PedidoRepositoryMySQL implements PedidoRepository {
-    @Override
-    public void salvar(Pedido pedido) {
-        // grava no MySQL
+    private PaymentService paymentService;
+
+    public OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
-}
 
-public class PedidoRepositoryEmMemoria implements PedidoRepository {
-    private final List<Pedido> pedidos = new ArrayList<>();
-
-    @Override
-    public void salvar(Pedido pedido) {
-        pedidos.add(pedido);
+    public void processOrder() {
+        paymentService.processPayment();
     }
 }
 ```
 
-### 3.2 Passo 2: receber a dependência de fora
+A classe `OrderService` não instancia mais `PaymentService`. Ela recebe o objeto através do construtor.
+
+A criação fica sob responsabilidade de outro componente.
 
 ```java
-public class PedidoService {
+public class Program {
 
-    private final PedidoRepository repository;
-
-    // A dependência é INJETADA pelo construtor
-    public PedidoService(PedidoRepository repository) {
-        this.repository = repository;
-    }
-
-    public void salvar(Pedido pedido) {
-        repository.salvar(pedido);
-    }
-}
-```
-
-### 3.3 Passo 3: quem monta tudo (composition root)
-
-```java
-public class Main {
     public static void main(String[] args) {
-        PedidoRepository repo = new PedidoRepositoryMySQL();
-        PedidoService service = new PedidoService(repo);
 
-        service.salvar(new Pedido());
+        PaymentService paymentService = new PaymentService();
+
+        OrderService orderService =
+                new OrderService(paymentService);
+
+        orderService.processOrder();
     }
 }
 ```
 
-Agora `PedidoService` não sabe qual banco está sendo usado. Quem decide é o `Main`. **O controle foi invertido.**
+**Resultado:** a responsabilidade pela criação da dependência foi transferida para fora de `OrderService`.
 
 ---
 
-## 4. Tipos de injeção
+## 2. Injeção de Dependência (DI)
 
-### 4.1 Por construtor (recomendada)
+**Injeção de Dependência (Dependency Injection — DI)** é uma técnica utilizada para implementar a Inversão de Controle.
+
+Consiste em fornecer a uma classe os objetos de que ela precisa, em vez de permitir que ela mesma os instancie.
+
+### Injeção via construtor
+
+É uma das formas mais utilizadas de injeção de dependência.
 
 ```java
-public PedidoService(PedidoRepository repository) {
-    this.repository = repository;
+public class OrderService {
+
+    private final PaymentService paymentService;
+
+    public OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 }
 ```
 
-- Dependências obrigatórias e explícitas.
-- Permite campos `final` (imutabilidade).
-- Fácil de testar.
-
-### 4.2 Por setter
+Observe:
 
 ```java
-public void setRepository(PedidoRepository repository) {
-    this.repository = repository;
+private final PaymentService paymentService;
+```
+
+O atributo `final` garante que a referência seja inicializada uma única vez.
+
+A dependência é recebida pelo construtor:
+
+```java
+public OrderService(PaymentService paymentService)
+```
+
+### Formas de Injeção de Dependência
+
+Existem três formas comuns:
+
+**1. Constructor Injection**
+
+A dependência é fornecida pelo construtor.
+
+**2. Setter Injection**
+
+A dependência é fornecida por um método setter.
+
+**3. Field Injection**
+
+A dependência é injetada diretamente no atributo da classe.
+
+No Spring Boot, recomenda-se utilizar Constructor Injection para dependências obrigatórias.
+
+---
+
+## 3. Diferença entre IoC e DI
+
+| Conceito | Definição |
+|---|---|
+| IoC | Princípio de inverter o controle da criação e gerenciamento das dependências. |
+| DI | Técnica utilizada para fornecer dependências a uma classe. |
+| IoC Container | Mecanismo responsável por gerenciar os objetos e suas dependências. |
+
+**Resumindo:**
+
+- IoC é o princípio.
+- DI é uma técnica para implementar esse princípio.
+- IoC Container é o mecanismo que gerencia os objetos.
+
+---
+
+## 4. IoC no Spring Boot
+
+No Spring Framework, o gerenciamento de dependências é realizado pelo **IoC Container**.
+
+O container é responsável por:
+
+- Instanciar objetos.
+- Gerenciar os objetos da aplicação.
+- Identificar dependências.
+- Injetar dependências automaticamente.
+- Gerenciar o ciclo de vida dos objetos.
+
+Os objetos gerenciados pelo Spring são chamados de **Spring Beans**.
+
+### Exemplo prático
+
+Primeiro, criamos um serviço de pagamento:
+
+```java
+import org.springframework.stereotype.Service;
+
+@Service
+public class PaymentService {
+
+    public void processPayment() {
+        System.out.println("Pagamento processado!");
+    }
 }
 ```
 
-- Útil para dependências **opcionais** ou que podem mudar.
-- Objeto pode ficar em estado incompleto se esquecerem de chamar o setter.
+A anotação `@Service` informa ao Spring que essa classe é um componente gerenciado.
 
-### 4.3 Por campo (evitar)
-
-```java
-@Autowired
-private PedidoRepository repository;
-```
-
-- Código curto, mas esconde dependências.
-- Dificulta testes (precisa de reflexão ou do framework).
-- Não permite `final`.
-
-| Tipo | Obrigatória? | Testável? | Recomendação |
-|------|:---:|:---:|:---:|
-| Construtor | Sim | Ótimo | ✅ Preferir |
-| Setter | Não | Bom | ⚠️ Casos opcionais |
-| Campo | Sim | Ruim | ❌ Evitar |
-
----
-
-## 5. Benefícios
-
-- **Baixo acoplamento:** classes dependem de interfaces, não de implementações.
-- **Testabilidade:** basta injetar um mock ou uma implementação falsa.
-- **Flexibilidade:** trocar implementações sem alterar a classe consumidora.
-- **Reuso e manutenção:** responsabilidades mais claras.
-- **Princípio da Inversão de Dependência (o "D" do SOLID):** módulos de alto nível não dependem dos de baixo nível; ambos dependem de abstrações.
-
-### Exemplo de teste com DI
+Agora, criamos o serviço de pedidos:
 
 ```java
-@Test
-void deveSalvarPedido() {
-    PedidoRepositoryEmMemoria repo = new PedidoRepositoryEmMemoria();
-    PedidoService service = new PedidoService(repo);
+import org.springframework.stereotype.Service;
 
-    service.salvar(new Pedido());
+@Service
+public class OrderService {
 
-    // verifica sem precisar de banco de dados
+    private final PaymentService paymentService;
+
+    public OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
+    public void processOrder() {
+        paymentService.processPayment();
+    }
 }
 ```
 
----
+O Spring identifica que `OrderService` precisa de `PaymentService`.
 
-## 6. Container de IoC
+Como ambas as classes são componentes gerenciados pelo Spring, o container consegue fornecer a dependência automaticamente.
 
-Montar tudo manualmente (como no `Main`) funciona, mas em aplicações grandes vira trabalho demais. Um **container de IoC** automatiza isso:
-
-1. Descobre quais classes são gerenciadas ("beans").
-2. Identifica as dependências de cada uma.
-3. Cria os objetos na ordem certa.
-4. Injeta as dependências.
-5. Gerencia o ciclo de vida (singleton, escopo por requisição etc.).
-
-Exemplos: **Spring** (Java), Guice, Dagger, CDI (Jakarta EE).
+Não precisamos instanciar manualmente os objetos utilizando `new`.
 
 ---
 
-## 7. Como o Spring faz (prévia para Spring Boot)
+## 5. Benefícios da Injeção de Dependência
+
+### Baixo acoplamento
+As classes deixam de controlar diretamente a criação de suas dependências.
+
+### Facilidade de manutenção
+É possível substituir implementações sem modificar toda a estrutura da aplicação.
+
+### Testabilidade
+Podemos fornecer dependências simuladas (mocks) durante os testes unitários.
+
+### Flexibilidade
+A aplicação fica mais preparada para evoluir e receber novas implementações.
+
+---
+
+## 6. Exemplo de aplicação com interfaces
+
+Imagine que um sistema aceite diferentes formas de pagamento.
+
+Criamos uma interface:
 
 ```java
-@Repository
-public class PedidoRepositoryMySQL implements PedidoRepository {
+public interface Payment {
+
+    void processPayment();
+}
+```
+
+Implementação para cartão:
+
+```java
+public class CreditCardPayment implements Payment {
+
     @Override
-    public void salvar(Pedido pedido) { /* ... */ }
-}
-
-@Service
-public class PedidoService {
-
-    private final PedidoRepository repository;
-
-    // Spring injeta automaticamente (com um único construtor, @Autowired é opcional)
-    public PedidoService(PedidoRepository repository) {
-        this.repository = repository;
-    }
-}
-
-@RestController
-@RequestMapping("/pedidos")
-public class PedidoController {
-
-    private final PedidoService service;
-
-    public PedidoController(PedidoService service) {
-        this.service = service;
+    public void processPayment() {
+        System.out.println("Pagamento com cartão!");
     }
 }
 ```
 
-### Principais anotações
-
-| Anotação | Função |
-|----------|--------|
-| `@Component` | Marca uma classe genérica como bean |
-| `@Service` | Bean da camada de regras de negócio |
-| `@Repository` | Bean da camada de acesso a dados |
-| `@Controller` / `@RestController` | Bean da camada web |
-| `@Configuration` + `@Bean` | Define beans manualmente em código |
-| `@Autowired` | Pede injeção (opcional em construtor único) |
-| `@Qualifier("nome")` | Escolhe um bean específico quando há várias implementações |
-| `@Primary` | Define a implementação padrão |
-
-### Quando existem duas implementações
+Implementação para PIX:
 
 ```java
-@Service
-@Primary
-public class PedidoRepositoryMySQL implements PedidoRepository { }
+public class PixPayment implements Payment {
 
-@Service("emMemoria")
-public class PedidoRepositoryEmMemoria implements PedidoRepository { }
-
-// Escolhendo explicitamente:
-public PedidoService(@Qualifier("emMemoria") PedidoRepository repository) {
-    this.repository = repository;
-}
-```
-
-### Definindo bean manualmente
-
-```java
-@Configuration
-public class AppConfig {
-
-    @Bean
-    public PedidoRepository pedidoRepository() {
-        return new PedidoRepositoryMySQL();
+    @Override
+    public void processPayment() {
+        System.out.println("Pagamento com PIX!");
     }
 }
 ```
 
----
+Nosso serviço:
 
-## 8. Escopos de beans no Spring
+```java
+public class OrderService {
 
-| Escopo | Comportamento |
-|--------|---------------|
-| `singleton` (padrão) | Uma única instância para toda a aplicação |
-| `prototype` | Nova instância a cada injeção |
-| `request` | Uma instância por requisição HTTP |
-| `session` | Uma instância por sessão HTTP |
+    private final Payment payment;
 
----
+    public OrderService(Payment payment) {
+        this.payment = payment;
+    }
 
-## 9. Analogia no React (você já usa DI sem perceber)
-
-Passar dependências por **props** ou **Context** é a mesma ideia:
-
-```jsx
-// Acoplado: o componente cria/importa a implementação diretamente
-function Lista() {
-  const dados = apiMySQL.buscar();
-  // ...
+    public void processOrder() {
+        payment.processPayment();
+    }
 }
-
-// Com injeção: o componente recebe a dependência de fora
-function Lista({ servico }) {
-  const dados = servico.buscar();
-  // ...
-}
-
-<Lista servico={servicoReal} />
-<Lista servico={servicoFake} /> // em testes
 ```
 
-Com `Context API`, o `Provider` age como o "container" que injeta o serviço nos componentes filhos.
+Observe que `OrderService` depende da interface `Payment`, não de uma implementação específica.
+
+Isso permite trabalhar com diferentes formas de pagamento sem alterar a lógica principal do serviço.
 
 ---
 
-## 10. Erros comuns
+## 7. Perguntas de entrevista
 
-- Injetar a **implementação concreta** em vez da interface.
-- Usar `new` dentro de classes de negócio para criar serviços.
-- Abusar de injeção por campo.
-- **Dependência circular** (A precisa de B, que precisa de A): indica falha de design.
-- Classes com construtores com muitos parâmetros: sinal de que a classe tem responsabilidades demais (violação do SRP).
-- Confundir **IoC** (princípio) com **DI** (técnica) ou com **Spring** (ferramenta).
+### O que é Inversão de Controle?
+
+É um princípio de desenvolvimento que transfere a responsabilidade de criar e gerenciar dependências de uma classe para um componente externo.
+
+### O que é Injeção de Dependência?
+
+É uma técnica que consiste em fornecer a uma classe os objetos de que ela precisa, em vez de permitir que ela mesma os instancie.
+
+### Qual a diferença entre IoC e DI?
+
+IoC é o princípio de inversão de controle, enquanto DI é uma técnica utilizada para implementar esse princípio.
+
+### O que é IoC Container?
+
+É o mecanismo responsável por instanciar, gerenciar e fornecer as dependências dos objetos da aplicação.
+
+### O que são Spring Beans?
+
+São objetos gerenciados pelo container do Spring.
+
+### Qual tipo de injeção é recomendado no Spring?
+
+Constructor Injection, pois permite declarar dependências obrigatórias, facilita testes e possibilita utilizar atributos `final`.
+
+### Quais são os benefícios da injeção de dependência?
+
+Redução de acoplamento, facilidade de manutenção, flexibilidade e facilidade para realizar testes.
 
 ---
 
-## 11. Resumo rápido
+## 8. Resumo para revisão
 
-| Conceito | O que é |
-|----------|---------|
-| **IoC** | Princípio: o controle de criar/gerenciar dependências sai da classe |
-| **DI** | Técnica: dependências são entregues de fora (construtor, setter, campo) |
-| **Container IoC** | Ferramenta que automatiza a DI (ex.: Spring) |
-| **Bean** | Objeto gerenciado pelo container |
-| **DIP (SOLID)** | Depender de abstrações, não de implementações |
+| Termo | Significado |
+|---|---|
+| IoC | Inversão de Controle |
+| DI | Injeção de Dependência |
+| IoC Container | Gerenciador de objetos e dependências |
+| Spring Bean | Objeto gerenciado pelo Spring |
+| Constructor Injection | Injeção pelo construtor |
+| Setter Injection | Injeção por método setter |
+| Field Injection | Injeção diretamente no atributo |
 
-**Em uma frase:** a classe para de *buscar/criar* o que precisa e passa a *receber* o que precisa.
+### Fluxo de funcionamento
 
----
+```text
+Spring Application
+       |
+       v
+   IoC Container
+       |
+       v
+ Instancia os Beans
+       |
+       v
+ Identifica dependências
+       |
+       v
+ Injeta as dependências
+       |
+       v
+ Aplicação pronta para executar
+```
 
-## 12. Checklist de estudo
-
-- [ ] Entender o problema do acoplamento forte com `new`
-- [ ] Diferenciar IoC de DI
-- [ ] Criar interfaces e múltiplas implementações em Java puro
-- [ ] Fazer injeção manual por construtor em um `Main`
-- [ ] Escrever um teste usando uma implementação falsa
-- [ ] Conhecer `@Component`, `@Service`, `@Repository`, `@Autowired`
-- [ ] Entender `@Qualifier`, `@Primary` e `@Bean`
-- [ ] Conhecer os escopos de bean
-- [ ] Praticar em um projeto Spring Boot simples (controller → service → repository)
+**Conceito fundamental:** uma classe deve se preocupar com sua responsabilidade de negócio, e não necessariamente com a criação e o gerenciamento de todos os objetos dos quais depende.
